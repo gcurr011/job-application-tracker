@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Job - JobTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ action }} Job</h1>
+</div>
+
+<div class="card form-card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="job_title">Job Title <span class="required">*</span></label>
+            <input type="text" id="job_title" name="job_title" class="form-control"
+                   value="{{ job.job_title or '' }}" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="company_id">Company</label>
+                <select id="company_id" name="company_id" class="form-control">
+                    <option value="">-- Select Company --</option>
+                    {% for c in companies %}
+                        <option value="{{ c.company_id }}"
+                            {% if job.company_id and job.company_id == c.company_id %}selected{% endif %}>
+                            {{ c.company_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="job_type">Job Type</label>
+                <select id="job_type" name="job_type" class="form-control">
+                    <option value="">-- Select --</option>
+                    {% for t in ['Full-time', 'Part-time', 'Contract', 'Internship'] %}
+                        <option value="{{ t }}" {% if job.job_type == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="salary_min">Min Salary ($)</label>
+                <input type="number" id="salary_min" name="salary_min" class="form-control"
+                       value="{{ job.salary_min or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="salary_max">Max Salary ($)</label>
+                <input type="number" id="salary_max" name="salary_max" class="form-control"
+                       value="{{ job.salary_max or '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="job_url">Job URL</label>
+                <input type="text" id="job_url" name="job_url" class="form-control"
+                       value="{{ job.job_url or '' }}" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label for="date_posted">Date Posted</label>
+                <input type="date" id="date_posted" name="date_posted" class="form-control"
+                       value="{{ job.date_posted or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="requirements">Required Skills <span class="hint">(comma-separated, e.g. Python, SQL, Flask)</span></label>
+            <input type="text" id="requirements" name="requirements" class="form-control"
+                   value="{{ job.requirements_str if job.requirements_str is defined else (job.requirements | join(', ') if job.requirements else '') }}"
+                   placeholder="Python, SQL, Flask, HTML">
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('jobs') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">{{ action }} Job</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

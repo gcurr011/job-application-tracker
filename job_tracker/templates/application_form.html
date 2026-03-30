@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Application - JobTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ action }} Application</h1>
+</div>
+
+<div class="card form-card">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="job_id">Job <span class="required">*</span></label>
+                <select id="job_id" name="job_id" class="form-control" required>
+                    <option value="">-- Select Job --</option>
+                    {% for j in jobs %}
+                        <option value="{{ j.job_id }}"
+                            {% if application.job_id and application.job_id == j.job_id %}selected{% endif %}>
+                            {{ j.job_title }} — {{ j.company_name or 'Unknown Company' }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="application_date">Application Date <span class="required">*</span></label>
+                <input type="date" id="application_date" name="application_date" class="form-control"
+                       value="{{ application.application_date or '' }}" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" class="form-control">
+                    {% for s in ['Applied', 'Screening', 'Interview', 'Offer', 'Rejected', 'Withdrawn'] %}
+                        <option value="{{ s }}" {% if application.status == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="resume_version">Resume Version</label>
+                <input type="text" id="resume_version" name="resume_version" class="form-control"
+                       value="{{ application.resume_version or '' }}" placeholder="e.g. v2.0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="cover_letter_sent" value="on"
+                       {% if application.cover_letter_sent %}checked{% endif %}>
+                Cover Letter Sent
+            </label>
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('applications') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">{{ action }} Application</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

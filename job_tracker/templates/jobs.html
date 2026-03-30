@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Jobs - JobTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Jobs</h1>
+        <p class="page-subtitle">{{ jobs | length }} tracked</p>
+    </div>
+    <a href="{{ url_for('add_job') }}" class="btn btn-primary">+ Add Job</a>
+</div>
+
+{% if jobs %}
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Type</th>
+                <th>Salary</th>
+                <th>Skills Required</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for j in jobs %}
+            <tr>
+                <td><strong>{{ j.job_title }}</strong></td>
+                <td>{{ j.company_name or '—' }}</td>
+                <td>
+                    {% if j.job_type %}
+                        <span class="badge badge-blue">{{ j.job_type }}</span>
+                    {% else %}—{% endif %}
+                </td>
+                <td>
+                    {% if j.salary_min and j.salary_max %}
+                        ${{ "{:,}".format(j.salary_min) }} – ${{ "{:,}".format(j.salary_max) }}
+                    {% elif j.salary_min %}
+                        ${{ "{:,}".format(j.salary_min) }}+
+                    {% else %}—{% endif %}
+                </td>
+                <td>
+                    {% if j.requirements %}
+                        {% for skill in j.requirements[:3] %}
+                            <span class="tag">{{ skill }}</span>
+                        {% endfor %}
+                        {% if j.requirements | length > 3 %}
+                            <span class="tag-more">+{{ j.requirements | length - 3 }}</span>
+                        {% endif %}
+                    {% else %}—{% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('edit_job', job_id=j.job_id) }}" class="btn btn-sm btn-secondary">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_job', job_id=j.job_id) }}" style="display:inline" onsubmit="return confirm('Delete this job?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-card">
+    <p>No jobs yet.</p>
+    <a href="{{ url_for('add_job') }}" class="btn btn-primary">Add Your First Job</a>
+</div>
+{% endif %}
+{% endblock %}

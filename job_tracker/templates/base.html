@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Job Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="nav-brand">
+        <span class="brand-icon">⚡</span> JobTrack
+    </a>
+    <ul class="nav-links">
+        <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+        <li><a href="{{ url_for('companies') }}" {% if 'compan' in request.endpoint %}class="active"{% endif %}>Companies</a></li>
+        <li><a href="{{ url_for('jobs') }}" {% if 'job' in request.endpoint and 'match' not in request.endpoint %}class="active"{% endif %}>Jobs</a></li>
+        <li><a href="{{ url_for('applications') }}" {% if 'application' in request.endpoint %}class="active"{% endif %}>Applications</a></li>
+        <li><a href="{{ url_for('contacts') }}" {% if 'contact' in request.endpoint %}class="active"{% endif %}>Contacts</a></li>
+        <li><a href="{{ url_for('job_match') }}" class="nav-match {% if request.endpoint == 'job_match' %}active{% endif %}">Job Match</a></li>
+    </ul>
+</nav>
+
+<main class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p>Job Application Tracker &mdash; COP4751 Advanced Database Management</p>
+</footer>
+
+</body>
+</html>

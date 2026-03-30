@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Applications - JobTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Applications</h1>
+        <p class="page-subtitle">{{ applications | length }} total</p>
+    </div>
+    <a href="{{ url_for('add_application') }}" class="btn btn-primary">+ Add Application</a>
+</div>
+
+{% if applications %}
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Status</th>
+                <th>Resume</th>
+                <th>Cover Letter</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in applications %}
+            <tr>
+                <td>{{ a.application_date }}</td>
+                <td><strong>{{ a.job_title or '—' }}</strong></td>
+                <td>{{ a.company_name or '—' }}</td>
+                <td><span class="status-badge status-{{ a.status | lower }}">{{ a.status }}</span></td>
+                <td>{{ a.resume_version or '—' }}</td>
+                <td>
+                    {% if a.cover_letter_sent %}
+                        <span class="check">✓</span>
+                    {% else %}
+                        <span class="cross">✗</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('edit_application', application_id=a.application_id) }}" class="btn btn-sm btn-secondary">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_application', application_id=a.application_id) }}" style="display:inline" onsubmit="return confirm('Delete this application?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-card">
+    <p>No applications yet.</p>
+    <a href="{{ url_for('add_application') }}" class="btn btn-primary">Add Your First Application</a>
+</div>
+{% endif %}
+{% endblock %}

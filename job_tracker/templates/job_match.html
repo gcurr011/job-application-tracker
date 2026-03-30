@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Job Match - JobTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>⚡ Job Match</h1>
+        <p class="page-subtitle">Find jobs that match your skills</p>
+    </div>
+</div>
+
+<div class="card form-card match-search-card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="skills">Your Skills <span class="hint">(comma-separated)</span></label>
+            <input type="text" id="skills" name="skills" class="form-control form-control-lg"
+                   value="{{ user_skills }}"
+                   placeholder="Python, SQL, Flask, HTML, CSS, JavaScript"
+                   autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Find Matches</button>
+    </form>
+</div>
+
+{% if user_skills %}
+    {% if results %}
+    <h2 class="section-title">{{ results | length }} Matching Job{% if results | length != 1 %}s{% endif %} Found</h2>
+    <div class="match-results">
+        {% for r in results %}
+        <div class="match-card {% if r.percentage == 100 %}match-perfect{% elif r.percentage >= 50 %}match-good{% else %}match-low{% endif %}">
+            <div class="match-header">
+                <div>
+                    <div class="match-title">{{ r.job_title }}</div>
+                    <div class="match-company">{{ r.company_name or 'Company N/A' }}</div>
+                    {% if r.salary_min and r.salary_max %}
+                    <div class="match-salary">${{ "{:,}".format(r.salary_min) }} – ${{ "{:,}".format(r.salary_max) }}</div>
+                    {% endif %}
+                </div>
+                <div class="match-pct-wrap">
+                    <div class="match-pct">{{ r.percentage }}%</div>
+                    <div class="match-pct-label">match</div>
+                </div>
+            </div>
+
+            <div class="match-bar-wrap">
+                <div class="match-bar" style="width: {{ r.percentage }}%"></div>
+            </div>
+
+            <div class="match-skills-row">
+                <div>
+                    <span class="skills-label">✓ You have ({{ r.matched | length }}/{{ r.total_skills }}):</span>
+                    {% for s in r.matched %}
+                        <span class="skill-tag skill-match">{{ s }}</span>
+                    {% endfor %}
+                    {% if not r.matched %}<span class="none-text">none</span>{% endif %}
+                </div>
+                {% if r.missing %}
+                <div>
+                    <span class="skills-label">✗ Missing:</span>
+                    {% for s in r.missing %}
+                        <span class="skill-tag skill-missing">{{ s }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-card">
+        <p>No jobs with skill requirements found.</p>
+        <p>Make sure to add skill requirements when adding jobs!</p>
+        <a href="{{ url_for('add_job') }}" class="btn btn-secondary">Add a Job with Skills</a>
+    </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
